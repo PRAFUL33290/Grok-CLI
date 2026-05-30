@@ -4,52 +4,51 @@
 
 Site personnel regroupant des notes et analyses autour de **Grok Build TUI** (l’outil CLI officiel de xAI) et de l’écosystème des agents de codage en terminal.
 
-> **Version déployée :** [Voir le site en ligne](https://PRAFUL33290.github.io/Grok-CLI/)
+---
+
+[![Deployed with GitHub Pages](https://img.shields.io/badge/Deployed%20with-GitHub%20Pages-222222?style=for-the-badge&logo=github)](https://PRAFUL33290.github.io/Grok-CLI/)
+
+**🌐 Site en ligne :** [https://PRAFUL33290.github.io/Grok-CLI/](https://PRAFUL33290.github.io/Grok-CLI/)
 
 ---
 
-## 📄 Pages disponibles
+## 📄 Les 3 pages
 
 | Page | Description |
 |------|-------------|
-| [index.html](index.html) | Présentation des grandes nouveautés de **Grok Build TUI** (officiel xAI) |
-| [pourquoi-cli.html](pourquoi-cli.html) | Analyse stratégique : **Pourquoi xAI a sorti Grok en CLI ?** |
-| [grok-cli-open-source.html](grok-cli-open-source.html) | Présentation du projet communautaire open source (superagent-ai/grok-cli) |
+| **[Grok Build TUI](index.html)** | Présentation officielle des nouveautés de l’outil CLI de xAI |
+| **[Pourquoi Grok en CLI ?](pourquoi-cli.html)** | Analyse stratégique complète (les vraies raisons) |
+| **[Grok CLI Open Source](grok-cli-open-source.html)** | Le projet communautaire (superagent-ai) |
 
 ---
 
-## 🌐 Version en ligne (GitHub Pages)
+## 🚀 Déploiement
 
-Le site est déployé automatiquement via GitHub Pages :
+Ce site est déployé automatiquement avec **GitHub Pages** depuis la branche `main`.
 
-**https://PRAFUL33290.github.io/Grok-CLI/**
+- URL : `https://PRAFUL33290.github.io/Grok-CLI/`
+- Source : `main` + dossier racine
 
 ---
 
-## 👨‍💻 Exécution locale
-
-Tu peux ouvrir les fichiers directement dans ton navigateur :
+## 💻 Exécution en local
 
 ```bash
 git clone https://github.com/PRAFUL33290/Grok-CLI.git
 cd Grok-CLI
 ```
 
-Puis ouvre `index.html` dans ton navigateur.
+Ouvre simplement `index.html` dans ton navigateur.
 
 ---
 
-## 🔍 Technologies
+## 🛠️ Stack
 
-- HTML + CSS pur (aucun framework)
-- Design sombre moderne (cohérent sur les 3 pages)
-- Menu de navigation fixe et centré (64px)
-- Images optimisées en local
+- HTML5 + CSS moderne (aucun framework JS)
+- Navigation fixe centrée (64px) sur toutes les pages
+- Design sombre cohérent
+- Images locales optimisées
 
 ---
 
-## ✍️ Auteur
-
-Créé par [Julien Guerrier](https://github.com/PRAFUL33290) pour usage personnel et réflexion sur l’écosystème Grok / xAI.
-
-*Dernière mise à jour : Mai 2026*
+Créé par [Julien Guerrier](https://github.com/PRAFUL33290) • Mai 2026
