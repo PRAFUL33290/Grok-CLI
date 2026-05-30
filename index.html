@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grok Build CLI • Nouveautés</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+
+        :root {
+            --bg: #0a0a0a;
+            --card: #111111;
+            --card-hover: #1a1a1a;
+            --border: #222222;
+            --text: #f5f5f5;
+            --text-muted: #a1a1aa;
+            --accent: #3b82f6;
+            --accent2: #22c55e;
+            --accent3: #a855f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0 0 40px; /* top padding handled by fixed nav */
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            text-align: center; /* All content centered */
+        }
+
+        /* === FIXED CENTERED NAV (same on all pages) === */
+        .fixed-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(10, 10, 10, 0.92);
+            border-bottom: 1px solid #222;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .nav-inner {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: #1a1a1a;
+        }
+
+        .nav-link.active {
+            color: #fff;
+            font-weight: 600;
+            background: #1f2937;
+        }
+
+        /* Full-screen Hero - true 100% width, edge-to-edge */
+        .full-hero {
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            min-height: 82vh;
+            max-height: 780px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover !important;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: multiply;
+            mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                rgba(0,0,0,0.92) 14%, 
+                black 78%, 
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                rgba(0,0,0,0.92) 14%, 
+                black 78%, 
+                transparent 100%
+            );
+            margin-bottom: 70px;
+            padding-top: 64px; /* space for fixed nav */
+            padding-bottom: 0;
+        }
+
+        .full-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(10,10,10,0.42) 0%,
+                rgba(10,10,10,0.08) 35%,
+                rgba(10,10,10,0.78) 100%
+            );
+            mix-blend-mode: multiply;
+            z-index: 1;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 3;
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .badge::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 56px;
+            font-weight: 600;
+            letter-spacing: -2.5px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 21px;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .version {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #666;
+            font-family: monospace;
+        }
+
+        .section {
+            margin-bottom: 70px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding: 0 40px;
+        }
+
+        .hero-content h1 {
+            font-size: 52px;
+            margin-bottom: 8px;
+            background: none;
+            -webkit-text-fill-color: white;
+        }
+
+        /* Blended section images with product/multiply mode + vertical fade mask */
+        .blended-image {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin: 24px 0 32px;
+            mix-blend-mode: multiply;
+            opacity: 0.75;
+            /* Smooth top + bottom fade */
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 22%,
+                black 78%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 22%,
+                black 78%,
+                transparent 100%
+            );
+            filter: saturate(0.85) contrast(1.05);
+        }
+
+        /* Even more artistic version for key sections */
+        .blended-image-strong {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 14px;
+            margin: 20px 0 30px;
+            mix-blend-mode: soft-light;
+            opacity: 0.65;
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 5%,
+                black 25%,
+                black 75%,
+                transparent 95%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 5%,
+                black 25%,
+                black 75%,
+                transparent 95%
+            );
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 28px 0;
+        }
+
+        .image-grid img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 14px;
+            mix-blend-mode: multiply;
+            opacity: 0.7;
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 18%,
+                black 82%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 18%,
+                black 82%,
+                transparent 100%
+            );
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, #333, transparent);
+            display: none; /* Centered titles - no need for the line */
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 26px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background: var(--card-hover);
+            border-color: #333;
+            transform: translateY(-2px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            opacity: 0.6;
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.65;
+            text-align: center;
+        }
+
+        .card ul {
+            margin-top: 16px;
+            padding-left: 4px;
+        }
+
+        .card li {
+            font-size: 14px;
+            color: #c4c4c4;
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent2);
+            font-weight: 700;
+        }
+
+        .highlight {
+            background: #1f2937;
+            border-radius: 8px;
+            padding: 2px 8px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #93c5fd;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: #111;
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+
+        .feature-item .emoji {
+            font-size: 22px;
+            width: 28px;
+            flex-shrink: 0;
+        }
+
+        .feature-item .content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            text-align: center;
+        }
+
+        .feature-item .content p {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .commands {
+            background: #0f0f0f;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 28px;
+            font-family: ui-monospace, monospace;
+        }
+
+        .command {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14.5px;
+        }
+
+        .command:last-child {
+            border-bottom: none;
+        }
+
+        .command .cmd {
+            color: #67e8f9;
+            font-weight: 500;
+        }
+
+        .command .desc {
+            color: #888;
+            text-align: right;
+            max-width: 55%;
+        }
+
+        .shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111;
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid #222;
+        }
+
+        .key {
+            background: #222;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #ddd;
+            font-weight: 600;
+            min-width: 78px;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            color: #555;
+            font-size: 13px;
+        }
+
+        /* Global text centering for clean centered layout */
+        p, li, .meta, .shortcut {
+            text-align: center;
+        }
+
+        /* Keep command blocks and code readable - left aligned inside centered container */
+        .commands {
+            text-align: left;
+        }
+
+        .footer-note {
+            background: #111;
+            border-radius: 9999px;
+            display: inline-block;
+            padding: 8px 20px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .xai {
+            color: #fff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- FIXED CENTERED NAV -->
+        <nav class="fixed-nav">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-link active">Grok Build TUI</a>
+                <a href="pourquoi-cli.html" class="nav-link">Pourquoi le CLI ?</a>
+                <a href="grok-cli-open-source.html" class="nav-link">Grok CLI Open Source</a>
+            </div>
+        </nav>
+
+        <!-- FULL SCREEN HERO -->
+        <div class="full-hero" style="background-image: url('images/terminal-hero.jpg');">
+            <div class="hero-inner">
+                <div class="badge" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2); margin-bottom:16px;">
+                    <span>NOUVEAU</span> • Grok Build TUI
+                </div>
+                <h1>Grok Build CLI</h1>
+                <p style="font-size:22px; max-width:620px; margin:0 auto 12px; color:#ddd;">
+                    La nouvelle génération d'assistant de codage en terminal par <span style="color:#fff;">xAI</span>
+                </p>
+                <div class="version" style="color:#999;">Version 4.3 • Avril 2026 — Entièrement repensé</div>
+            </div>
+        </div>
+
+        <!-- INTRO -->
+        <div class="section">
+            <p style="max-width: 720px; margin: 0 auto 40px; text-align: center; font-size: 17px; color: #ccc;">
+                Grok n'est plus seulement un modèle. C'est maintenant une <strong>expérience complète en terminal</strong> 
+                ultra-puissante : TUI riche, agents parallèles, workflows réutilisables, intégrations externes, et bien plus.
+            </p>
+        </div>
+
+        <!-- GRANDES NOUVEAUTÉS -->
+        <div class="section">
+            <h2 class="section-title">Les grandes nouveautés</h2>
+            
+            <div class="grid">
+                <!-- Skills -->
+                <div class="card">
+                    <span class="card-icon">🧩</span>
+                    <h3>Skills — Workflows réutilisables</h3>
+                    <p>Des paquets de prompts intelligents qui encapsulent des procédures complètes. Plus besoin de répéter les instructions à chaque fois.</p>
+                    <ul>
+                        <li>Créez des skills avec <span class="highlight">/skillify</span></li>
+                        <li>Auto-capture depuis une session existante</li>
+                        <li>Invocation automatique ou via <span class="highlight">/nom-du-skill</span></li>
+                        <li>Partageables via plugins et Git</li>
+                    </ul>
+                </div>
+
+                <!-- Subagents -->
+                <div class="card">
+                    <span class="card-icon">🤖</span>
+                    <h3>Subagents &amp; Personas</h3>
+                    <p>Des agents enfants spécialisés qui travaillent <strong>en parallèle</strong> avec leur propre contexte et outils limités.</p>
+                    <ul>
+                        <li><strong>Personas</strong> : implementer, reviewer, researcher, security-auditor, test-writer...</li>
+                        <li>Isolation via git worktrees</li>
+                        <li>Chaînage intelligent avec <span class="highlight">resume_from</span></li>
+                        <li>Limite de profondeur configurable</li>
+                    </ul>
+                </div>
+
+                <!-- Plan Mode -->
+                <div class="card">
+                    <span class="card-icon">📋</span>
+                    <h3>Plan Mode</h3>
+                    <p>Phase de planification structurée obligatoire avant toute modification sur les tâches ambiguës.</p>
+                    <ul>
+                        <li>Exploration libre du code</li>
+                        <li>Écriture uniquement dans <span class="highlight">plan.md</span></li>
+                        <li>Approbation utilisateur avant implémentation</li>
+                        <li>Révision collaborative avec commentaires inline</li>
+                    </ul>
+                </div>
+
+                <!-- MCP -->
+                <div class="card">
+                    <span class="card-icon">🔌</span>
+                    <h3>MCP Servers (Model Context Protocol)</h3>
+                    <p>Intégrez n'importe quel service externe via le protocole standard : GitHub, Linear, bases de données, Sentry, etc.</p>
+                    <ul>
+                        <li>Outils découverts dynamiquement avec <span class="highlight">search_tool</span></li>
+                        <li>OAuth géré automatiquement</li>
+                        <li>Configuration stdio ou HTTP/SSE</li>
+                        <li>Scoped par projet ou global</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Visual for main features - blended with multiply + fade masks -->
+            <div class="image-grid">
+                <img src="images/network-connected.jpg" alt="Intégrations et agents connectés" class="blended-image">
+                <img src="images/neural-abstract.png" alt="Réseau neuronal abstrait - IA" class="blended-image">
+            </div>
+        </div>
+
+        <!-- Autres nouveautés importantes -->
+        <div class="section">
+            <h2 class="section-title">Autres avancées majeures</h2>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="emoji">🔌</div>
+                    <div class="content">
+                        <h4>Plugins</h4>
+                        <p>Paquets partageables contenant skills + agents + hooks + MCP. Installation via Git ou marketplace.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="emoji">🖥️</div>
+                    <div class="content">
+                        <h4>Agent Mode (ACP)</h4>
+                        <p>Intégration native dans Zed, Neovim, Emacs via le protocole Agent Client Protocol. 72 méthodes d'extension.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="emoji">⚙️</div>
+                    <div class="content">
+                        <h4>Background Tasks + Scheduler</h4>
+                        <p>Lancez des serveurs, builds, tests en arrière-plan. <span class="highlight">/loop</span> et scheduler pour tâches récurrentes.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="emoji">📡</div>
+                    <div class="content">
+                        <h4>Headless &amp; CI/CD</h4>
+                        <p>Mode non-interactif avec sortie JSON ou streaming NDJSON. Parfait pour pipelines et scripts.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="emoji">🧠</div>
+                    <div class="content">
+                        <h4>Mémoire cross-session</h4>
+                        <p>Recherchez dans l'historique de toutes vos sessions passées avec <span class="highlight">memory_search</span>.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="emoji">🎨</div>
+                    <div class="content">
+                        <h4>Theming &amp; Vim mode</h4>
+                        <p>Interface entièrement personnalisable. Support complet Vim (j/k, folds, etc.) et configuration fine.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMANDES ESSENTIELLES -->
+        <div class="section">
+            <h2 class="section-title">Commandes essentielles</h2>
+            <div class="commands">
+                <div class="command">
+                    <span class="cmd">grok</span>
+                    <span class="desc">Lance l'interface TUI interactive</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">grok -p "ta tâche" --yolo</span>
+                    <span class="desc">Mode headless (scripts / CI)</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">/skillify</span>
+                    <span class="desc">Capture automatiquement un workflow en skill</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">/plugins</span>
+                    <span class="desc">Gère les plugins, hooks et marketplace</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">grok mcp add ...</span>
+                    <span class="desc">Ajoute un serveur MCP (GitHub, Linear...)</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">grok agent stdio</span>
+                    <span class="desc">Mode ACP pour intégration IDE</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">/loop 5m "vérifie les tests"</span>
+                    <span class="desc">Tâche récurrente toutes les 5 minutes</span>
+                </div>
+                <div class="command">
+                    <span class="cmd">grok inspect</span>
+                    <span class="desc">Liste skills, plugins, MCP, agents...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RACCOURCIS CLAVIER -->
+        <div class="section">
+            <h2 class="section-title">Raccourcis clavier puissants</h2>
+            <div class="shortcuts">
+                <div class="shortcut">
+                    <span>Ctrl + L</span>
+                    <span class="key">Plugins / MCP</span>
+                </div>
+                <div class="shortcut">
+                    <span>Ctrl + T</span>
+                    <span class="key">Panneau des tâches</span>
+                </div>
+                <div class="shortcut">
+                    <span>Ctrl + G</span>
+                    <span class="key">Mettre en arrière-plan</span>
+                </div>
+                <div class="shortcut">
+                    <span>Ctrl + O</span>
+                    <span class="key">Mode YOLO (auto-approve)</span>
+                </div>
+                <div class="shortcut">
+                    <span>Ctrl + N</span>
+                    <span class="key">Nouvelle session</span>
+                </div>
+                <div class="shortcut">
+                    <span>Ctrl + Shift + E</span>
+                    <span class="key">Toggle tous les thinking blocks</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Documentation complète disponible dans <span style="color:#777">~/.grok/docs/user-guide/</span></p>
+            <div class="footer-note">
+                Fichier généré automatiquement • Toutes les infos proviennent des docs officielles xAI
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

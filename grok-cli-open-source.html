@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grok CLI Open Source • Un concurrent à Claude Code</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+
+        :root {
+            --bg: #0a0a0a;
+            --card: #111111;
+            --card-hover: #1a1a1a;
+            --border: #222222;
+            --text: #f5f5f5;
+            --text-muted: #a1a1aa;
+            --accent: #3b82f6;
+            --accent2: #22c55e;
+            --accent3: #a855f7;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 0 0 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            text-align: center; /* Tout le contenu centré */
+        }
+
+        /* === FIXED CENTERED NAV (same on all pages) === */
+        .fixed-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(10, 10, 10, 0.92);
+            border-bottom: 1px solid #222;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .nav-inner {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: #1a1a1a;
+        }
+
+        .nav-link.active {
+            color: #fff;
+            font-weight: 600;
+            background: #1f2937;
+        }
+
+        /* Full-screen Hero - true 100% width, edge-to-edge */
+        .full-hero {
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            min-height: 78vh;
+            max-height: 720px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-size: cover !important;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: multiply;
+            mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                rgba(0,0,0,0.9) 13%, 
+                black 76%, 
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                rgba(0,0,0,0.9) 13%, 
+                black 76%, 
+                transparent 100%
+            );
+            margin-bottom: 60px;
+            padding-top: 64px;
+            padding-bottom: 0;
+        }
+
+        .full-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,10,0.48) 0%,
+                rgba(10,10,10,0.12) 32%,
+                rgba(10,10,10,0.75) 100%
+            );
+            mix-blend-mode: multiply;
+            z-index: 1;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 3;
+            max-width: 1200px;
+            width: auto;
+            margin: 0 auto;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .hero-inner h1,
+        .hero-inner p {
+            text-align: center !important;
+        }
+
+        header {
+            margin-bottom: 50px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #f59e0b;
+            margin-bottom: 16px;
+        }
+
+        .disclaimer {
+            background: #1c1917;
+            border: 1px solid #451a03;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 13.5px;
+            color: #d1d5db;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -2px;
+            line-height: 1.05;
+            margin-bottom: 14px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 680px;
+        }
+
+        .meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            background: #111;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 13px;
+            border: 1px solid #222;
+            color: #aaa;
+        }
+
+        /* === ADVANCED BLENDED IMAGES (Product / Multiply + Gradient Masks) === */
+        .hero {
+            position: relative;
+            height: 420px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 50px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            /* Blending + vertical fade mask */
+            background-blend-mode: multiply;
+            mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                rgba(0,0,0,0.92) 16%, 
+                black 80%, 
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                rgba(0,0,0,0.92) 16%, 
+                black 80%, 
+                transparent 100%
+            );
+        }
+
+
+
+        .blended-image {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin: 22px 0 32px;
+            mix-blend-mode: multiply;
+            opacity: 0.72;
+            /* Top + bottom fade mask */
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 20%,
+                black 80%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 20%,
+                black 80%,
+                transparent 100%
+            );
+            filter: saturate(0.82) contrast(1.08);
+        }
+
+        .blended-image-strong {
+            width: 100%;
+            height: 230px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 18px 0;
+            mix-blend-mode: soft-light;
+            opacity: 0.6;
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 8%,
+                black 22%,
+                black 78%,
+                transparent 92%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 8%,
+                black 22%,
+                black 78%,
+                transparent 92%
+            );
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 22px;
+            text-align: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, #333, transparent);
+            display: none;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 18px;
+            justify-items: center; /* Center the cards visually */
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            text-align: center; /* Force centering inside cards */
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #333;
+        }
+
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 14px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .card p,
+        .card ul,
+        .card li {
+            color: #a1a1aa;
+            font-size: 14.5px;
+            text-align: center;
+        }
+
+        .highlight-box {
+            background: #111;
+            border-left: 4px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            justify-items: center; /* Center items in the grid */
+        }
+
+        .feature {
+            background: #111;
+            border: 1px solid #222;
+            padding: 16px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .feature strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .feature span {
+            text-align: center;
+            display: block;
+        }
+
+        .code {
+            font-family: ui-monospace, monospace;
+            background: #1a1a1a;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #67e8f9;
+        }
+
+        .install-box {
+            background: #0f0f0f;
+            border: 1px solid #222;
+            border-radius: 14px;
+            padding: 26px;
+            margin: 20px 0;
+        }
+
+        .install-box pre {
+            background: #1a1a1a;
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 14px;
+            color: #a5f3fc;
+            margin: 12px 0;
+        }
+
+        .warning {
+            background: #431407;
+            border: 1px solid #78350f;
+            color: #fed7aa;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1f2937;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #374151;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #374151;
+            border-color: #4b5563;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border-color: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .comparison .side {
+            background: #111;
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            text-align: center;
+        }
+
+        .comparison h4 {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        footer {
+            margin-top: 70px;
+            padding-top: 30px;
+            border-top: 1px solid #222;
+            text-align: center;
+            color: #555;
+            font-size: 13px;
+        }
+
+        /* Strong global text centering */
+        .container p,
+        .container li,
+        .container h1,
+        .container h2,
+        .container h3,
+        .container h4,
+        .container .card,
+        .container .feature,
+        .container .highlight-box,
+        .container .disclaimer,
+        .container .meta,
+        .container .badge {
+            text-align: center !important;
+        }
+
+        /* Garder les blocs techniques lisibles (alignés à gauche à l'intérieur) */
+        .install-box,
+        .commands,
+        pre,
+        code {
+            text-align: left;
+        }
+
+        /* Petits ajustements pour les éléments spécifiques */
+        .meta-item {
+            text-align: center;
+            display: inline-block;
+        }
+
+        .source {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        /* Centre tout le texte y compris les listes */
+        .container ul,
+        .container ol {
+            text-align: center !important;
+            padding-left: 0 !important;
+            list-style-position: inside;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- FIXED CENTERED NAV -->
+        <nav class="fixed-nav">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-link">Grok Build TUI</a>
+                <a href="pourquoi-cli.html" class="nav-link">Pourquoi le CLI ?</a>
+                <a href="grok-cli-open-source.html" class="nav-link active">Grok CLI Open Source</a>
+            </div>
+        </nav>
+
+        <!-- FULL SCREEN HERO -->
+        <div class="full-hero" style="background-image: url('images/dark-editor.jpg');">
+            <div class="hero-inner">
+                <div class="badge" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15); color:#ddd;">
+                    OPEN SOURCE • Community Project
+                </div>
+                
+                <h1 style="color:white; font-size: 48px;">Grok CLI Open Source</h1>
+                <div style="max-width: 720px; margin: 12px auto 0; text-align: center; color:#ccc; font-size:20px; line-height: 1.4;">
+                    Un agent de codage en terminal open source, propulsé par l'API Grok de xAI.<br>
+                    Un concurrent direct à Claude Code.
+                </div>
+            </div>
+        </div>
+
+        <div class="disclaimer" style="text-align: center;">
+            <strong>Important :</strong> Ce projet est développé par la communauté (superagent-ai). 
+            Il n’est <strong>ni affilié, ni approuvé, ni sponsorisé</strong> par xAI Corp. 
+            « Grok » est une marque déposée de xAI.
+        </div>
+
+        <div class="meta" style="text-align: center; justify-content: center;">
+            <div class="meta-item">⭐ ~3.1k stars sur GitHub</div>
+            <div class="meta-item">MIT License</div>
+            <div class="meta-item">Écrit en TypeScript + Bun + OpenTUI</div>
+            <div class="meta-item">Mai 2026</div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="section">
+            <p style="font-size: 17px; max-width: 760px; color: #ccc;">
+                Grok CLI Open Source transforme votre terminal en un copilote IA puissant qui comprend votre codebase, 
+                maintient le contexte sur plusieurs sessions, et peut déléguer du travail à des sous-agents. 
+                Il est conçu pour les développeurs qui veulent garder le contrôle total dans leur environnement CLI tout en bénéficiant de l'IA.
+            </p>
+        </div>
+
+        <!-- Points forts -->
+        <div class="section">
+            <h2 class="section-title">Points forts du projet</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">🧠</div>
+                    <h3>Contexte persistant</h3>
+                    <p>Le contexte est maintenu à travers les sessions de terminal. L’agent se souvient des fichiers, décisions architecturales et de l’historique du projet.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔍</div>
+                    <h3>Recherche en temps réel</h3>
+                    <p>Accès natif à <strong>search_x</strong> (X/Twitter) et <strong>search_web</strong> directement depuis l’agent.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🖼️</div>
+                    <h3>Génération multimédia</h3>
+                    <p>Génération d’images et de vidéos courtes intégrée (text-to-image, image-to-video, édition). Fichiers sauvegardés localement.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📱</div>
+                    <h3>Contrôle à distance</h3>
+                    <p>Contrôle via Telegram : pairage unique, puis pilotage complet de l’agent depuis votre téléphone.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités avancées -->
+        <div class="section">
+            <h2 class="section-title">Fonctionnalités avancées</h2>
+            
+            <div class="feature-grid">
+                <div class="feature">
+                    <strong>Sub-agents par défaut</strong>
+                    <span>Delegation parallèle (explore, general, computer, verify...)</span>
+                </div>
+                <div class="feature">
+                    <strong>Computer Use</strong>
+                    <span>Agent desktop pour automatiser macOS via accessibilité + snapshots sémantiques</span>
+                </div>
+                <div class="feature">
+                    <strong>Skills</strong>
+                    <span>Workflows réutilisables dans <span class="code">.agents/skills/</span> ou <span class="code">~/.agents/skills/</span></span>
+                </div>
+                <div class="feature">
+                    <strong>MCP Servers</strong>
+                    <span>Extensible via Model Context Protocol (même standard que l’outil officiel)</span>
+                </div>
+                <div class="feature">
+                    <strong>Verify</strong>
+                    <span><span class="code">/verify</span> ou <span class="code">--verify</span> : build, test, capture d’écran et vidéo dans un sandbox</span>
+                </div>
+                <div class="feature">
+                    <strong>Sandbox (Shuru)</strong>
+                    <span>Exécution dans une microVM isolée sur macOS Apple Silicon</span>
+                </div>
+                <div class="feature">
+                    <strong>Hooks</strong>
+                    <span>Exécution de commandes shell sur les événements du cycle de vie de l’agent</span>
+                </div>
+                <div class="feature">
+                    <strong>AGENTS.md</strong>
+                    <span>Fichiers d’instructions projet (style Codex) fusionnés automatiquement</span>
+                </div>
+            </div>
+
+            <img src="images/developer-dark-room.jpg" alt="Développeur dans un environnement sombre avec IA" class="blended-image">
+        </div>
+
+        <!-- Installation -->
+        <div class="section">
+            <h2 class="section-title">Installation</h2>
+            
+            <div class="install-box">
+                <p><strong>Installation rapide (recommandée) :</strong></p>
+                <pre><code>curl -fsSL https://raw.githubusercontent.com/superagent-ai/grok-cli/main/install.sh | bash</code></pre>
+                
+                <p style="margin-top: 16px;"><strong>Alternative avec Bun :</strong></p>
+                <pre><code>bun add -g grok-dev</code></pre>
+            </div>
+
+            <div class="warning">
+                <strong>Prérequis :</strong> Une clé API Grok valide (obtenue sur <a href="https://x.ai" target="_blank" style="color:#fed7aa;">x.ai</a>) + un terminal moderne (WezTerm, Alacritty, Ghostty ou Kitty recommandés pour la TUI).
+            </div>
+        </div>
+
+        <!-- Utilisation -->
+        <div class="section">
+            <h2 class="section-title">Comment l’utiliser</h2>
+            
+            <div class="highlight-box">
+                <strong>Mode interactif (TUI) :</strong><br>
+                <span class="code">grok</span> ou <span class="code">grok -d /chemin/du/projet</span>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Mode headless (scripts / CI) :</strong><br>
+                <span class="code">grok --prompt "Exécute les tests et résume les échecs" --format json</span>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Contrôle à distance Telegram :</strong><br>
+                <span class="code">/remote-control</span> → Telegram dans la TUI, puis <span class="code">/pair</span> depuis Telegram.
+            </div>
+        </div>
+
+        <!-- Positionnement -->
+        <div class="section">
+            <h2 class="section-title">Positionnement</h2>
+            
+            <div class="comparison">
+                <div class="side">
+                    <h4>Ce projet (superagent-ai/grok-cli)</h4>
+                    <ul style="color:#aaa; font-size:14px; line-height:1.75;">
+                        <li>Open source (MIT)</li>
+                        <li>Conçu comme alternative à Claude Code</li>
+                        <li>Focus terminal + remote control (Telegram)</li>
+                        <li>Computer use + sandbox intégré</li>
+                        <li>Communauté active</li>
+                    </ul>
+                </div>
+                <div class="side">
+                    <h4>Grok Build TUI (officiel xAI)</h4>
+                    <ul style="color:#aaa; font-size:14px; line-height:1.75;">
+                        <li>Produit propriétaire xAI</li>
+                        <li>TUI très avancée (skills, plan mode, personas...)</li>
+                        <li>Intégration IDE via ACP</li>
+                        <li>Écosystème plugins + MCP officiel</li>
+                        <li>Expérience plus « produit fini »</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Intégration API (selon l'article Apidog) -->
+        <div class="section">
+            <h2 class="section-title">Intégration avec les outils de développement d’API</h2>
+            <p style="color:#a1a1aa; max-width: 720px;">
+                Comme mentionné dans l’article d’Apidog, Grok CLI Open Source s’intègre particulièrement bien dans les flux de développement d’API :
+                génération de endpoints, services et modèles, puis validation automatique via des outils comme Apidog pour les tests et la documentation.
+            </p>
+        </div>
+
+        <!-- Liens -->
+        <div class="section">
+            <h2 class="section-title">Ressources</h2>
+            <div class="links">
+                <a href="https://github.com/superagent-ai/grok-cli" target="_blank" class="btn">GitHub Repository</a>
+                <a href="https://apidog.com/fr/blog/grok-cli-open-source/" target="_blank" class="btn">Article Apidog (FR)</a>
+                <a href="https://x.ai" target="_blank" class="btn">Obtenir une clé API xAI</a>
+                <a href="index.html" class="btn">← Grok Build TUI (officiel)</a>
+                <a href="pourquoi-cli.html" class="btn">Pourquoi le CLI ?</a>
+            </div>
+        </div>
+
+        <footer>
+            Page créée à partir des informations de l’article Apidog et du dépôt GitHub officiel du projet.<br>
+            <span class="source">Dossier : ~/Desktop/grok/ • Page générée pour usage personnel</span>
+        </footer>
+    </div>
+</body>
+</html>
