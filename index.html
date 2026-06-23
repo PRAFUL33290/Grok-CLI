@@ -3,751 +3,918 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grok Build CLI • Nouveautés</title>
+    <title>Grok CLI — Commandes de base</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
             --bg: #0a0a0a;
             --card: #111111;
-            --card-hover: #1a1a1a;
             --border: #222222;
             --text: #f5f5f5;
-            --text-muted: #a1a1aa;
-            --accent: #3b82f6;
-            --accent2: #22c55e;
-            --accent3: #a855f7;
+            --muted: #a1a1aa;
+            --green: #22c55e;
+            --cyan: #67e8f9;
+            --win: #60a5fa;
+            --purple: #a855f7;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
         body {
-            font-family: 'Inter', system_ui, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            padding: 0 0 40px; /* top padding handled by fixed nav */
-            min-height: 100vh;
+            padding-bottom: 60px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 960px;
             margin: 0 auto;
             padding: 0 24px;
-            text-align: center; /* All content centered */
         }
 
-        /* === FIXED CENTERED NAV (same on all pages) === */
+        /* ── Top nav ── */
         .fixed-nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            background: rgba(10, 10, 10, 0.92);
-            border-bottom: 1px solid #222;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border);
             z-index: 200;
             display: flex;
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
         }
 
         .nav-inner {
             display: flex;
-            gap: 36px;
             align-items: center;
+            gap: 8px;
         }
 
         .nav-link {
-            color: #a1a1aa;
+            color: var(--muted);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            padding: 8px 18px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.15s;
             white-space: nowrap;
         }
 
-        .nav-link:hover {
-            color: #fff;
-            background: #1a1a1a;
-        }
+        .nav-link:hover { color: #fff; background: #1a1a1a; }
+        .nav-link.active { color: #fff; background: #1f2937; font-weight: 600; }
 
-        .nav-link.active {
-            color: #fff;
-            font-weight: 600;
-            background: #1f2937;
-        }
-
-        /* Full-screen Hero - true 100% width, edge-to-edge */
-        .full-hero {
-            width: 100vw;
-            margin-left: calc(50% - 50vw);
-            min-height: 82vh;
-            max-height: 780px;
+        /* ── Mega menu ── */
+        .mega-wrap {
             position: relative;
+        }
+
+        .mega-trigger {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background-size: cover !important;
-            background-position: center;
-            background-attachment: fixed;
-            background-blend-mode: multiply;
-            mask-image: linear-gradient(
-                to bottom, 
-                transparent 0%, 
-                rgba(0,0,0,0.92) 14%, 
-                black 78%, 
-                transparent 100%
-            );
-            -webkit-mask-image: linear-gradient(
-                to bottom, 
-                transparent 0%, 
-                rgba(0,0,0,0.92) 14%, 
-                black 78%, 
-                transparent 100%
-            );
-            margin-bottom: 70px;
-            padding-top: 64px; /* space for fixed nav */
-            padding-bottom: 0;
-        }
-
-        .full-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(10,10,10,0.42) 0%,
-                rgba(10,10,10,0.08) 35%,
-                rgba(10,10,10,0.78) 100%
-            );
-            mix-blend-mode: multiply;
-            z-index: 1;
-        }
-
-        .hero-inner {
-            position: relative;
-            z-index: 3;
-            max-width: 1200px;
-            width: 100%;
-            padding: 0 24px;
-            text-align: center;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            padding: 6px 16px;
-            border-radius: 9999px;
+            gap: 6px;
+            cursor: pointer;
+            border: none;
+            background: #1f2937;
+            color: #fff;
+            font-family: inherit;
             font-size: 13px;
-            font-weight: 500;
-            color: #22c55e;
-            margin-bottom: 20px;
-        }
-
-        .badge::before {
-            content: '';
-            display: block;
-            width: 8px;
-            height: 8px;
-            background: #22c55e;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e;
-        }
-
-        h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 56px;
             font-weight: 600;
-            letter-spacing: -2.5px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            padding: 8px 16px;
+            border-radius: 6px;
         }
 
-        .subtitle {
-            font-size: 21px;
-            color: var(--text-muted);
-            max-width: 620px;
-            margin: 0 auto;
+        .mega-trigger .chevron {
+            font-size: 10px;
+            transition: transform 0.2s;
         }
 
-        .version {
-            display: inline-block;
-            margin-top: 16px;
-            font-size: 14px;
-            color: #666;
-            font-family: monospace;
-        }
+        .mega-wrap:hover .chevron,
+        .mega-wrap:focus-within .chevron { transform: rotate(180deg); }
 
-        .section {
-            margin-bottom: 70px;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            padding: 0 40px;
-        }
-
-        .hero-content h1 {
-            font-size: 52px;
-            margin-bottom: 8px;
-            background: none;
-            -webkit-text-fill-color: white;
-        }
-
-        /* Blended section images with product/multiply mode + vertical fade mask */
-        .blended-image {
-            width: 100%;
-            height: 260px;
-            object-fit: cover;
-            border-radius: 16px;
-            margin: 24px 0 32px;
-            mix-blend-mode: multiply;
-            opacity: 0.75;
-            /* Smooth top + bottom fade */
-            mask-image: linear-gradient(
-                to bottom,
-                transparent 0%,
-                black 22%,
-                black 78%,
-                transparent 100%
-            );
-            -webkit-mask-image: linear-gradient(
-                to bottom,
-                transparent 0%,
-                black 22%,
-                black 78%,
-                transparent 100%
-            );
-            filter: saturate(0.85) contrast(1.05);
-        }
-
-        /* Even more artistic version for key sections */
-        .blended-image-strong {
-            width: 100%;
-            height: 240px;
-            object-fit: cover;
+        .mega-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(680px, 92vw);
+            background: #111;
+            border: 1px solid #333;
             border-radius: 14px;
-            margin: 20px 0 30px;
-            mix-blend-mode: soft-light;
-            opacity: 0.65;
-            mask-image: linear-gradient(
-                to bottom,
-                transparent 5%,
-                black 25%,
-                black 75%,
-                transparent 95%
-            );
-            -webkit-mask-image: linear-gradient(
-                to bottom,
-                transparent 5%,
-                black 25%,
-                black 75%,
-                transparent 95%
-            );
-        }
-
-        .image-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 28px 0;
-        }
-
-        .image-grid img {
-            width: 100%;
-            height: 190px;
-            object-fit: cover;
-            border-radius: 14px;
-            mix-blend-mode: multiply;
-            opacity: 0.7;
-            mask-image: linear-gradient(
-                to bottom,
-                transparent 0%,
-                black 18%,
-                black 82%,
-                transparent 100%
-            );
-            -webkit-mask-image: linear-gradient(
-                to bottom,
-                transparent 0%,
-                black 18%,
-                black 82%,
-                transparent 100%
-            );
-        }
-
-        .section-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            text-align: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, #333, transparent);
-            display: none; /* Centered titles - no need for the line */
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px 26px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s, visibility 0.18s, transform 0.18s;
+            transform: translateX(-50%) translateY(6px);
             overflow: hidden;
         }
 
-        .card:hover {
-            background: var(--card-hover);
-            border-color: #333;
-            transform: translateY(-2px);
+        .mega-wrap:hover .mega-panel,
+        .mega-wrap:focus-within .mega-panel {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            opacity: 0.6;
-        }
-
-        .card-icon {
-            font-size: 32px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .card h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #fff;
-            text-align: center;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 15px;
-            line-height: 1.65;
-            text-align: center;
-        }
-
-        .card ul {
-            margin-top: 16px;
-            padding-left: 4px;
-        }
-
-        .card li {
-            font-size: 14px;
-            color: #c4c4c4;
-            margin-bottom: 6px;
-            position: relative;
-            padding-left: 18px;
-        }
-
-        .card li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent2);
-            font-weight: 700;
-        }
-
-        .highlight {
-            background: #1f2937;
-            border-radius: 8px;
-            padding: 2px 8px;
-            font-family: monospace;
-            font-size: 13px;
-            color: #93c5fd;
-        }
-
-        .features-list {
+        .mega-columns {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 14px;
+            grid-template-columns: 1fr 1fr;
         }
 
-        .feature-item {
+        .mega-col {
+            padding: 20px 22px 18px;
+        }
+
+        .mega-col + .mega-col {
+            border-left: 1px solid var(--border);
+        }
+
+        .mega-col-header {
             display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            background: #111;
-            padding: 18px 20px;
-            border-radius: 12px;
-            border: 1px solid #222;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .feature-item .emoji {
-            font-size: 22px;
-            width: 28px;
+        .mega-col-header.linux { color: var(--green); }
+        .mega-col-header.windows { color: var(--win); }
+
+        .mega-col-header .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
             flex-shrink: 0;
         }
 
-        .feature-item .content h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 3px;
-            text-align: center;
-        }
+        .mega-col-header.linux .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .mega-col-header.windows .dot { background: var(--win); box-shadow: 0 0 8px var(--win); }
 
-        .feature-item .content p {
-            font-size: 13.5px;
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        .commands {
-            background: #0f0f0f;
-            border: 1px solid #222;
-            border-radius: 16px;
-            padding: 28px;
-            font-family: ui-monospace, monospace;
-        }
-
-        .command {
+        .mega-links {
+            list-style: none;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mega-links a {
+            display: block;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 7px 10px;
+            border-radius: 6px;
+            transition: all 0.12s;
+        }
+
+        .mega-links a:hover {
+            color: #fff;
+            background: #1a1a1a;
+        }
+
+        .mega-links a code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--cyan);
+            margin-left: 4px;
+        }
+
+        .mega-footer {
+            padding: 12px 22px;
+            border-top: 1px solid var(--border);
+            background: #0d0d0d;
+            display: flex;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #222;
-            font-size: 14.5px;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .command:last-child {
-            border-bottom: none;
+        .mega-footer span {
+            font-size: 12px;
+            color: #666;
         }
 
-        .command .cmd {
-            color: #67e8f9;
+        .mega-footer a {
+            font-size: 12px;
+            color: var(--purple);
+            text-decoration: none;
             font-weight: 500;
         }
 
-        .command .desc {
-            color: #888;
-            text-align: right;
-            max-width: 55%;
+        .mega-footer a:hover { text-decoration: underline; }
+
+        /* ── Header ── */
+        header {
+            padding: 96px 0 40px;
+            text-align: center;
         }
 
-        .shortcuts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        h1 {
+            font-size: 34px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 540px;
+            margin: 0 auto 28px;
+        }
+
+        /* Platform jump pills */
+        .platform-pills {
+            display: flex;
+            justify-content: center;
             gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            transition: all 0.15s;
+        }
+
+        .pill:hover { transform: translateY(-1px); }
+
+        .pill.linux { border-color: #166534; }
+        .pill.linux:hover { background: #0f1f14; border-color: var(--green); }
+
+        .pill.windows { border-color: #1e40af; }
+        .pill.windows:hover { background: #0f1729; border-color: var(--win); }
+
+        .pill.commun { border-color: #6b21a8; }
+        .pill.commun:hover { background: #1a0f24; border-color: var(--purple); }
+
+        /* ── Platform sections ── */
+        .platform-section {
+            margin-bottom: 56px;
+            scroll-margin-top: 80px;
+        }
+
+        .platform-banner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 22px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border);
+        }
+
+        .platform-banner.linux {
+            background: linear-gradient(135deg, #0f1f14 0%, #111 100%);
+            border-color: #166534;
+        }
+
+        .platform-banner.windows {
+            background: linear-gradient(135deg, #0f1729 0%, #111 100%);
+            border-color: #1e40af;
+        }
+
+        .platform-banner.commun {
+            background: linear-gradient(135deg, #1a0f24 0%, #111 100%);
+            border-color: #6b21a8;
+        }
+
+        .platform-banner .icon { font-size: 28px; }
+
+        .platform-banner h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .platform-banner p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .subsection {
+            margin-bottom: 36px;
+            scroll-margin-top: 80px;
+        }
+
+        .subsection h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ddd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection h3::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .linux-zone .subsection h3::before { background: var(--green); }
+        .windows-zone .subsection h3::before { background: var(--win); }
+        .commun-zone .subsection h3::before { background: var(--purple); }
+
+        /* Command blocks */
+        .cmd-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .cmd-row {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 12px;
+            padding: 11px 18px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            align-items: start;
+        }
+
+        .cmd-row:last-child { border-bottom: none; }
+
+        .cmd-row .cmd {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+            font-size: 12.5px;
+            word-break: break-all;
+        }
+
+        .cmd-row .desc {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .cmd-row .desc strong { color: #ccc; font-weight: 500; }
+
+        pre {
+            margin: 0;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: var(--cyan);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        /* Shortcuts */
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 8px;
         }
 
         .shortcut {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background: #111;
-            padding: 12px 18px;
-            border-radius: 10px;
-            border: 1px solid #222;
+            align-items: center;
+            gap: 10px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 13px;
         }
 
-        .key {
+        .shortcut .keys {
+            font-family: 'JetBrains Mono', monospace;
             background: #222;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 13px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11.5px;
             color: #ddd;
-            font-weight: 600;
-            min-width: 78px;
-            text-align: center;
+            white-space: nowrap;
         }
+
+        .shortcut .action { color: var(--muted); text-align: right; font-size: 12.5px; }
+
+        /* Notes */
+        .note {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 12px;
+        }
+
+        .note strong { color: #ccc; }
+        .note code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            color: var(--cyan);
+        }
+
+        .note.linux { border-left: 3px solid var(--green); }
+        .note.win { border-left: 3px solid var(--win); }
+        .note.tip { border-left: 3px solid var(--purple); }
 
         footer {
-            margin-top: 80px;
             text-align: center;
             color: #555;
-            font-size: 13px;
-        }
-
-        /* Global text centering for clean centered layout */
-        p, li, .meta, .shortcut {
-            text-align: center;
-        }
-
-        /* Keep command blocks and code readable - left aligned inside centered container */
-        .commands {
-            text-align: left;
-        }
-
-        .footer-note {
-            background: #111;
-            border-radius: 9999px;
-            display: inline-block;
-            padding: 8px 20px;
-            margin-top: 12px;
             font-size: 12px;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
         }
 
-        .xai {
-            color: #fff;
-            font-weight: 600;
+        footer code {
+            font-family: 'JetBrains Mono', monospace;
+            color: #777;
+            font-size: 11px;
+        }
+
+        @media (max-width: 640px) {
+            .mega-columns { grid-template-columns: 1fr; }
+            .mega-col + .mega-col {
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+            .cmd-row { grid-template-columns: 1fr; gap: 4px; }
+            h1 { font-size: 26px; }
         }
     </style>
 </head>
 <body>
+    <nav class="fixed-nav">
+        <div class="nav-inner">
+            <div class="mega-wrap">
+                <button class="mega-trigger" aria-haspopup="true" aria-expanded="false">
+                    Commandes
+                    <span class="chevron">▼</span>
+                </button>
+                <div class="mega-panel" role="menu">
+                    <div class="mega-columns">
+                        <!-- Linux / macOS -->
+                        <div class="mega-col">
+                            <div class="mega-col-header linux">
+                                <span class="dot"></span>
+                                Linux / macOS
+                            </div>
+                            <ul class="mega-links">
+                                <li><a href="#linux-install">Installation <code>curl | bash</code></a></li>
+                                <li><a href="#linux-launch">Lancement &amp; authentification</a></li>
+                                <li><a href="#linux-headless">Mode headless &amp; scripts</a></li>
+                                <li><a href="#linux-shortcuts">Raccourcis TUI</a></li>
+                                <li><a href="#linux-utils">CLI utilitaires</a></li>
+                            </ul>
+                        </div>
+                        <!-- Windows Shell -->
+                        <div class="mega-col">
+                            <div class="mega-col-header windows">
+                                <span class="dot"></span>
+                                Windows Shell
+                            </div>
+                            <ul class="mega-links">
+                                <li><a href="#win-install">Installation <code>irm | iex</code></a></li>
+                                <li><a href="#win-launch">Lancement &amp; authentification</a></li>
+                                <li><a href="#win-headless">Mode headless &amp; scripts</a></li>
+                                <li><a href="#win-shortcuts">Raccourcis TUI + spécificités</a></li>
+                                <li><a href="#win-utils">CLI utilitaires</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mega-footer">
+                        <span>Slash commands identiques sur toutes les plateformes</span>
+                        <a href="#commun-slash">→ Voir les slash commands</a>
+                    </div>
+                </div>
+            </div>
+            <a href="pourquoi-cli.html" class="nav-link">Pourquoi le CLI ?</a>
+            <a href="grok-cli-open-source.html" class="nav-link">Grok CLI Open Source</a>
+        </div>
+    </nav>
+
     <div class="container">
-        <!-- FIXED CENTERED NAV -->
-        <nav class="fixed-nav">
-            <div class="nav-inner">
-                <a href="index.html" class="nav-link active">Grok Build TUI</a>
-                <a href="pourquoi-cli.html" class="nav-link">Pourquoi le CLI ?</a>
-                <a href="grok-cli-open-source.html" class="nav-link">Grok CLI Open Source</a>
+        <header>
+            <h1>Grok CLI — Commandes de base</h1>
+            <p class="subtitle">Survole <strong>Commandes</strong> pour le méga menu, ou saute directement à ta plateforme.</p>
+            <div class="platform-pills">
+                <a href="#linux-mac" class="pill linux">🐧 Linux / macOS</a>
+                <a href="#windows" class="pill windows">🪟 Windows Shell</a>
+                <a href="#commun" class="pill commun">⚡ Commun (TUI)</a>
             </div>
-        </nav>
+        </header>
 
-        <!-- FULL SCREEN HERO -->
-        <div class="full-hero" style="background-image: url('images/terminal-hero.jpg');">
-            <div class="hero-inner">
-                <div class="badge" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2); margin-bottom:16px;">
-                    <span>NOUVEAU</span> • Grok Build TUI
-                </div>
-                <h1>Grok Build CLI</h1>
-                <p style="font-size:22px; max-width:620px; margin:0 auto 12px; color:#ddd;">
-                    La nouvelle génération d'assistant de codage en terminal par <span style="color:#fff;">xAI</span>
-                </p>
-                <div class="version" style="color:#999;">Version 4.3 • Avril 2026 — Entièrement repensé</div>
-            </div>
-        </div>
-
-        <!-- INTRO -->
-        <div class="section">
-            <p style="max-width: 720px; margin: 0 auto 40px; text-align: center; font-size: 17px; color: #ccc;">
-                Grok n'est plus seulement un modèle. C'est maintenant une <strong>expérience complète en terminal</strong> 
-                ultra-puissante : TUI riche, agents parallèles, workflows réutilisables, intégrations externes, et bien plus.
-            </p>
-        </div>
-
-        <!-- GRANDES NOUVEAUTÉS -->
-        <div class="section">
-            <h2 class="section-title">Les grandes nouveautés</h2>
-            
-            <div class="grid">
-                <!-- Skills -->
-                <div class="card">
-                    <span class="card-icon">🧩</span>
-                    <h3>Skills — Workflows réutilisables</h3>
-                    <p>Des paquets de prompts intelligents qui encapsulent des procédures complètes. Plus besoin de répéter les instructions à chaque fois.</p>
-                    <ul>
-                        <li>Créez des skills avec <span class="highlight">/skillify</span></li>
-                        <li>Auto-capture depuis une session existante</li>
-                        <li>Invocation automatique ou via <span class="highlight">/nom-du-skill</span></li>
-                        <li>Partageables via plugins et Git</li>
-                    </ul>
-                </div>
-
-                <!-- Subagents -->
-                <div class="card">
-                    <span class="card-icon">🤖</span>
-                    <h3>Subagents &amp; Personas</h3>
-                    <p>Des agents enfants spécialisés qui travaillent <strong>en parallèle</strong> avec leur propre contexte et outils limités.</p>
-                    <ul>
-                        <li><strong>Personas</strong> : implementer, reviewer, researcher, security-auditor, test-writer...</li>
-                        <li>Isolation via git worktrees</li>
-                        <li>Chaînage intelligent avec <span class="highlight">resume_from</span></li>
-                        <li>Limite de profondeur configurable</li>
-                    </ul>
-                </div>
-
-                <!-- Plan Mode -->
-                <div class="card">
-                    <span class="card-icon">📋</span>
-                    <h3>Plan Mode</h3>
-                    <p>Phase de planification structurée obligatoire avant toute modification sur les tâches ambiguës.</p>
-                    <ul>
-                        <li>Exploration libre du code</li>
-                        <li>Écriture uniquement dans <span class="highlight">plan.md</span></li>
-                        <li>Approbation utilisateur avant implémentation</li>
-                        <li>Révision collaborative avec commentaires inline</li>
-                    </ul>
-                </div>
-
-                <!-- MCP -->
-                <div class="card">
-                    <span class="card-icon">🔌</span>
-                    <h3>MCP Servers (Model Context Protocol)</h3>
-                    <p>Intégrez n'importe quel service externe via le protocole standard : GitHub, Linear, bases de données, Sentry, etc.</p>
-                    <ul>
-                        <li>Outils découverts dynamiquement avec <span class="highlight">search_tool</span></li>
-                        <li>OAuth géré automatiquement</li>
-                        <li>Configuration stdio ou HTTP/SSE</li>
-                        <li>Scoped par projet ou global</li>
-                    </ul>
+        <!-- ═══════════════════════════════════════ -->
+        <!-- LINUX / macOS                           -->
+        <!-- ═══════════════════════════════════════ -->
+        <section id="linux-mac" class="platform-section linux-zone">
+            <div class="platform-banner linux">
+                <span class="icon">🐧</span>
+                <div>
+                    <h2>Linux / macOS</h2>
+                    <p>Bash, zsh, Git Bash — chemins Unix, <code>export</code>, <code>curl</code></p>
                 </div>
             </div>
 
-            <!-- Visual for main features - blended with multiply + fade masks -->
-            <div class="image-grid">
-                <img src="images/network-connected.jpg" alt="Intégrations et agents connectés" class="blended-image">
-                <img src="images/neural-abstract.png" alt="Réseau neuronal abstrait - IA" class="blended-image">
-            </div>
-        </div>
+            <div id="linux-install" class="subsection">
+                <h3>Installation</h3>
+                <pre>curl -fsSL https://x.ai/cli/install.sh | bash
 
-        <!-- Autres nouveautés importantes -->
-        <div class="section">
-            <h2 class="section-title">Autres avancées majeures</h2>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="emoji">🔌</div>
-                    <div class="content">
-                        <h4>Plugins</h4>
-                        <p>Paquets partageables contenant skills + agents + hooks + MCP. Installation via Git ou marketplace.</p>
+# Version spécifique
+curl -fsSL https://x.ai/cli/install.sh | bash -s 0.1.42
+
+# Vérifier &amp; mettre à jour
+grok --version
+grok update</pre>
+                <div class="note linux">
+                    <strong>Git Bash (Windows) :</strong> utilise aussi ce script bash si tu préfères PowerShell.
+                </div>
+            </div>
+
+            <div id="linux-launch" class="subsection">
+                <h3>Lancement &amp; authentification</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">grok</span>
+                        <span class="desc">Lance l'interface TUI interactive</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok "ta tâche"</span>
+                        <span class="desc">Lance le TUI avec un prompt initial</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --yolo</span>
+                        <span class="desc">Auto-approuve toutes les actions</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -m grok-build</span>
+                        <span class="desc">Choisir un modèle spécifique</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --cwd ~/projets/mon-app</span>
+                        <span class="desc">Démarrer dans un répertoire précis</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -c</span>
+                        <span class="desc">Continuer la session la plus récente</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --resume &lt;id&gt;</span>
+                        <span class="desc">Reprendre une session par son ID</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok login</span>
+                        <span class="desc">Connexion via navigateur (OAuth)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok login --device-auth</span>
+                        <span class="desc">Connexion sans navigateur (code appareil)</span>
                     </div>
                 </div>
-                <div class="feature-item">
-                    <div class="emoji">🖥️</div>
-                    <div class="content">
-                        <h4>Agent Mode (ACP)</h4>
-                        <p>Intégration native dans Zed, Neovim, Emacs via le protocole Agent Client Protocol. 72 méthodes d'extension.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="emoji">⚙️</div>
-                    <div class="content">
-                        <h4>Background Tasks + Scheduler</h4>
-                        <p>Lancez des serveurs, builds, tests en arrière-plan. <span class="highlight">/loop</span> et scheduler pour tâches récurrentes.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="emoji">📡</div>
-                    <div class="content">
-                        <h4>Headless &amp; CI/CD</h4>
-                        <p>Mode non-interactif avec sortie JSON ou streaming NDJSON. Parfait pour pipelines et scripts.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="emoji">🧠</div>
-                    <div class="content">
-                        <h4>Mémoire cross-session</h4>
-                        <p>Recherchez dans l'historique de toutes vos sessions passées avec <span class="highlight">memory_search</span>.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="emoji">🎨</div>
-                    <div class="content">
-                        <h4>Theming &amp; Vim mode</h4>
-                        <p>Interface entièrement personnalisable. Support complet Vim (j/k, folds, etc.) et configuration fine.</p>
-                    </div>
-                </div>
+                <pre style="margin-top: 12px;"># Auth par clé API (CI / sans navigateur)
+export XAI_API_KEY="xai-..."
+grok</pre>
             </div>
-        </div>
 
-        <!-- COMMANDES ESSENTIELLES -->
-        <div class="section">
-            <h2 class="section-title">Commandes essentielles</h2>
-            <div class="commands">
-                <div class="command">
-                    <span class="cmd">grok</span>
-                    <span class="desc">Lance l'interface TUI interactive</span>
+            <div id="linux-headless" class="subsection">
+                <h3>Mode headless (scripts &amp; CI)</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "ta tâche"</span>
+                        <span class="desc">Exécuter une tâche sans interface</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "..." --yolo</span>
+                        <span class="desc">Headless avec auto-approbation</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "..." --output-format json</span>
+                        <span class="desc">Sortie JSON (text, sessionId, stopReason)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "..." --output-format streaming-json</span>
+                        <span class="desc">Flux NDJSON en temps réel</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "suite" --resume &lt;id&gt;</span>
+                        <span class="desc">Continuer une session headless</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --prompt-file ./prompt.txt</span>
+                        <span class="desc">Lire le prompt depuis un fichier</span>
+                    </div>
                 </div>
-                <div class="command">
-                    <span class="cmd">grok -p "ta tâche" --yolo</span>
-                    <span class="desc">Mode headless (scripts / CI)</span>
-                </div>
-                <div class="command">
-                    <span class="cmd">/skillify</span>
-                    <span class="desc">Capture automatiquement un workflow en skill</span>
-                </div>
-                <div class="command">
-                    <span class="cmd">/plugins</span>
-                    <span class="desc">Gère les plugins, hooks et marketplace</span>
-                </div>
-                <div class="command">
-                    <span class="cmd">grok mcp add ...</span>
-                    <span class="desc">Ajoute un serveur MCP (GitHub, Linear...)</span>
-                </div>
-                <div class="command">
-                    <span class="cmd">grok agent stdio</span>
-                    <span class="desc">Mode ACP pour intégration IDE</span>
-                </div>
-                <div class="command">
-                    <span class="cmd">/loop 5m "vérifie les tests"</span>
-                    <span class="desc">Tâche récurrente toutes les 5 minutes</span>
-                </div>
-                <div class="command">
-                    <span class="cmd">grok inspect</span>
-                    <span class="desc">Liste skills, plugins, MCP, agents...</span>
-                </div>
-            </div>
-        </div>
+                <pre style="margin-top: 12px;"># Exemple CI avec jq
+grok -p "Review changes" --output-format json --yolo | jq -r '.text'
 
-        <!-- RACCOURCIS CLAVIER -->
-        <div class="section">
-            <h2 class="section-title">Raccourcis clavier puissants</h2>
-            <div class="shortcuts">
-                <div class="shortcut">
-                    <span>Ctrl + L</span>
-                    <span class="key">Plugins / MCP</span>
+# Contexte git dans le prompt
+grok -p "Commit message pour: $(git diff --staged)"</pre>
+            </div>
+
+            <div id="linux-shortcuts" class="subsection">
+                <h3>Raccourcis TUI</h3>
+                <div class="shortcut-grid">
+                    <div class="shortcut"><span class="keys">Enter</span><span class="action">Envoyer le prompt</span></div>
+                    <div class="shortcut"><span class="keys">Shift+Enter</span><span class="action">Saut de ligne (multiline)</span></div>
+                    <div class="shortcut"><span class="keys">Tab / Esc</span><span class="action">Prompt ↔ scrollback</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+P / ?</span><span class="action">Palette de commandes</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+O</span><span class="action">Toggle YOLO</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+N</span><span class="action">Nouvelle session</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+S</span><span class="action">Reprendre une session</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+C</span><span class="action">Annuler le tour</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+M</span><span class="action">Changer de modèle</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+L</span><span class="action">Extensions (plugins, MCP)</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+Enter</span><span class="action">Interjection mid-turn</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+V</span><span class="action">Coller texte / image</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+Q</span><span class="action">Quitter (double appui)</span></div>
+                    <div class="shortcut"><span class="keys">!</span><span class="action">Mode shell</span></div>
                 </div>
-                <div class="shortcut">
-                    <span>Ctrl + T</span>
-                    <span class="key">Panneau des tâches</span>
-                </div>
-                <div class="shortcut">
-                    <span>Ctrl + G</span>
-                    <span class="key">Mettre en arrière-plan</span>
-                </div>
-                <div class="shortcut">
-                    <span>Ctrl + O</span>
-                    <span class="key">Mode YOLO (auto-approve)</span>
-                </div>
-                <div class="shortcut">
-                    <span>Ctrl + N</span>
-                    <span class="key">Nouvelle session</span>
-                </div>
-                <div class="shortcut">
-                    <span>Ctrl + Shift + E</span>
-                    <span class="key">Toggle tous les thinking blocks</span>
+                <div class="note linux">
+                    <strong>macOS :</strong> <code>Cmd+V</code> pour coller images. <strong>Vim mode :</strong> <code>/vim-mode</code> ou <code>vim_mode = true</code> dans config.
                 </div>
             </div>
-        </div>
+
+            <div id="linux-utils" class="subsection">
+                <h3>CLI utilitaires</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">grok inspect</span>
+                        <span class="desc">Lister skills, plugins, MCP, agents…</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok mcp add &lt;nom&gt; ...</span>
+                        <span class="desc">Ajouter un serveur MCP</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok agent stdio</span>
+                        <span class="desc">Mode ACP pour IDE (Zed, Neovim…)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok update</span>
+                        <span class="desc">Mettre à jour Grok CLI</span>
+                    </div>
+                </div>
+                <div class="note linux">
+                    Config : <code>~/.grok/config.toml</code> · Sessions : <code>~/.grok/sessions/</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- WINDOWS SHELL                           -->
+        <!-- ═══════════════════════════════════════ -->
+        <section id="windows" class="platform-section windows-zone">
+            <div class="platform-banner windows">
+                <span class="icon">🪟</span>
+                <div>
+                    <h2>Windows Shell</h2>
+                    <p>PowerShell, Windows Terminal, VS Code / Cursor — chemins Windows, <code>$env:</code></p>
+                </div>
+            </div>
+
+            <div id="win-install" class="subsection">
+                <h3>Installation (PowerShell)</h3>
+                <pre>irm https://x.ai/cli/install.ps1 | iex
+
+# Version spécifique
+$env:GROK_VERSION="0.1.42"
+irm https://x.ai/cli/install.ps1 | iex
+
+# Vérifier &amp; mettre à jour
+grok --version
+grok update</pre>
+                <div class="note win">
+                    <strong>PATH :</strong> le script ajoute <code>%USERPROFILE%\.grok\bin</code> automatiquement. Alternatives : Git Bash (<code>curl | bash</code>) ou WSL.
+                </div>
+            </div>
+
+            <div id="win-launch" class="subsection">
+                <h3>Lancement &amp; authentification</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">grok</span>
+                        <span class="desc">Lance l'interface TUI interactive</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok "ta tâche"</span>
+                        <span class="desc">Lance le TUI avec un prompt initial</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --yolo</span>
+                        <span class="desc">Auto-approuve toutes les actions</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --cwd C:\Users\toi\projets\mon-app</span>
+                        <span class="desc">Démarrer dans un répertoire précis</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -c</span>
+                        <span class="desc">Continuer la session la plus récente</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --resume &lt;id&gt;</span>
+                        <span class="desc">Reprendre une session par son ID</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok login</span>
+                        <span class="desc">Connexion via navigateur (OAuth)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok login --device-auth</span>
+                        <span class="desc">Connexion sans navigateur (code appareil)</span>
+                    </div>
+                </div>
+                <pre style="margin-top: 12px;"># Auth par clé API (CI / sans navigateur)
+$env:XAI_API_KEY="xai-..."
+grok
+
+# Persister la variable (session utilisateur)
+[Environment]::SetEnvironmentVariable("XAI_API_KEY", "xai-...", "User")</pre>
+            </div>
+
+            <div id="win-headless" class="subsection">
+                <h3>Mode headless (scripts &amp; CI)</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "ta tâche"</span>
+                        <span class="desc">Exécuter une tâche sans interface</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "..." --yolo</span>
+                        <span class="desc">Headless avec auto-approbation</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "..." --output-format json</span>
+                        <span class="desc">Sortie JSON</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok -p "suite" --resume &lt;id&gt;</span>
+                        <span class="desc">Continuer une session headless</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok --prompt-file .\prompt.txt</span>
+                        <span class="desc">Lire le prompt depuis un fichier</span>
+                    </div>
+                </div>
+                <pre style="margin-top: 12px;"># Exemple PowerShell
+grok -p "Review changes" --output-format json --yolo | ConvertFrom-Json | Select-Object -ExpandProperty text</pre>
+            </div>
+
+            <div id="win-shortcuts" class="subsection">
+                <h3>Raccourcis TUI + spécificités Windows</h3>
+                <div class="shortcut-grid">
+                    <div class="shortcut"><span class="keys">Enter</span><span class="action">Envoyer le prompt</span></div>
+                    <div class="shortcut"><span class="keys">Alt+Enter</span><span class="action">Saut de ligne (VS Code / Cursor)</span></div>
+                    <div class="shortcut"><span class="keys">Alt+V</span><span class="action">Coller une image</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+V</span><span class="action">Coller texte uniquement</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+I</span><span class="action">Interjection (stable)</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+'</span><span class="action">File d'attente prompts</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+O</span><span class="action">Toggle YOLO</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+N</span><span class="action">Nouvelle session</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+S</span><span class="action">Reprendre une session</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+L</span><span class="action">Extensions (plugins, MCP)</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+P / ?</span><span class="action">Palette de commandes</span></div>
+                    <div class="shortcut"><span class="keys">Ctrl+Q</span><span class="action">Quitter (double appui)</span></div>
+                </div>
+                <div class="note win">
+                    <strong>Alt+V</strong> est spécifique à Grok sur Windows — <code>Ctrl+V</code> ne gère pas les images du presse-papiers. Lance <code>/terminal-setup</code> pour diagnostiquer couleurs et clipboard.
+                </div>
+                <div class="note win" style="margin-top: 8px;">
+                    <strong>Windows Terminal :</strong> pour coller des images avec <code>Ctrl+V</code>, ajoute <code>{ "command": null, "keys": "ctrl+v" }</code> dans <code>actions</code> de <code>settings.json</code>.
+                </div>
+            </div>
+
+            <div id="win-utils" class="subsection">
+                <h3>CLI utilitaires</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">grok inspect</span>
+                        <span class="desc">Lister skills, plugins, MCP, agents…</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok mcp add &lt;nom&gt; ...</span>
+                        <span class="desc">Ajouter un serveur MCP</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok agent stdio</span>
+                        <span class="desc">Mode ACP pour intégration IDE</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">grok update</span>
+                        <span class="desc">Mettre à jour Grok CLI</span>
+                    </div>
+                </div>
+                <div class="note win">
+                    Config : <code>%USERPROFILE%\.grok\config.toml</code> · Sessions : <code>%USERPROFILE%\.grok\sessions\</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- COMMUN (TUI)                            -->
+        <!-- ═══════════════════════════════════════ -->
+        <section id="commun" class="platform-section commun-zone">
+            <div class="platform-banner commun">
+                <span class="icon">⚡</span>
+                <div>
+                    <h2>Commun — dans le TUI</h2>
+                    <p>Slash commands et interactions identiques sur Linux, macOS et Windows</p>
+                </div>
+            </div>
+
+            <div id="commun-slash" class="subsection">
+                <h3>Slash commands</h3>
+                <div class="cmd-block">
+                    <div class="cmd-row">
+                        <span class="cmd">/new</span>
+                        <span class="desc">Nouvelle session (alias : <strong>/clear</strong>)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/resume</span>
+                        <span class="desc">Ouvrir le sélecteur de sessions</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/model grok-build</span>
+                        <span class="desc">Changer de modèle (alias : <strong>/m</strong>)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/always-approve</span>
+                        <span class="desc">Mode YOLO (alias : <strong>/yolo</strong>)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/compact</span>
+                        <span class="desc">Compresser l'historique</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/context</span>
+                        <span class="desc">Usage du contexte</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/settings</span>
+                        <span class="desc">Paramètres (alias : <strong>/config</strong>)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/plugins</span>
+                        <span class="desc">Plugins &amp; marketplace</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/skills</span>
+                        <span class="desc">Gérer les skills</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/mcps</span>
+                        <span class="desc">Serveurs MCP</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/plan</span>
+                        <span class="desc">Mode planification</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/terminal-setup</span>
+                        <span class="desc">Diagnostic terminal</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/home</span>
+                        <span class="desc">Écran d'accueil (alias : <strong>/welcome</strong>)</span>
+                    </div>
+                    <div class="cmd-row">
+                        <span class="cmd">/quit</span>
+                        <span class="desc">Quitter (alias : <strong>/exit</strong>)</span>
+                    </div>
+                </div>
+                <div class="note tip">
+                    Tape <strong>/</strong> pour l'autocomplétion. Référence fichiers : <strong>@src/main.rs</strong> ou <strong>@src/main.rs:10-50</strong>
+                </div>
+            </div>
+        </section>
 
         <footer>
-            <p>Documentation complète disponible dans <span style="color:#777">~/.grok/docs/user-guide/</span></p>
-            <div class="footer-note">
-                Fichier généré automatiquement • Toutes les infos proviennent des docs officielles xAI
-            </div>
+            <p>Docs officielles xAI · Grok Build CLI</p>
         </footer>
     </div>
 </body>
